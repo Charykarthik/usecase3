@@ -16,7 +16,7 @@ pipeline {
                     sh 'sudo apt-get install -y awscli'
 
                     // Replace with your AWS CLI command to create a database dump
-                    sh 'aws ec2 run-instances --instance-id sql-server --command "mysqldump -u root -pPassword@123 karthik > /tmp/dump.sql"'
+                    sh 'aws ec2 run-instances --instance-id sql-server --command "mysqldump -u root -pPassword@123 karthik > /dump.sql"'
                 }
             }
         }
@@ -31,7 +31,7 @@ pipeline {
                     sh "aws s3api create-bucket --bucket ${s3BucketName} --region us-east-1"
 
                     // Copy dump file to S3 bucket
-                    sh 'aws s3 cp /tmp/dump.sql s3://${s3BucketName}/dump.sql'
+                    sh 'aws s3 cp /dump.sql s3://${s3BucketName}/dump.sql'
                 }
             }
         }
