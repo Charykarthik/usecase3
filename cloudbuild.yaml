@@ -1,1 +1,7 @@
-
+stage:
+   - name: gcr.io/cloud-builder/gcloud
+       entrypoint:'bash'
+   - args:
+   - '-c'
+   - |
+     gcloud compute ssh --sql-server --project=  --zone=asia-south1-c --command "mysqldump kathik /dump.sql"  
