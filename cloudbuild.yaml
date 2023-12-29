@@ -1,4 +1,4 @@
-stage:
+steps:
    - name: gcr.io/cloud-builder/gcloud
        entrypoint:'bash'
    - args:
