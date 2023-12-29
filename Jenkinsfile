@@ -12,7 +12,8 @@ pipeline {
             steps {
                 script {
                     // Install AWS CLI
-                    sh 'apt-get update && apt-get install -y awscli'
+                    sh 'sudo apt-get update '
+                    sh 'sudo apt-get install -y awscli'
 
                     // Replace with your AWS CLI command to create a database dump
                     sh 'aws ec2 run-instances --instance-id sql-server --command "mysqldump -u root -pPassword@123 karthik > /tmp/dump.sql"'
