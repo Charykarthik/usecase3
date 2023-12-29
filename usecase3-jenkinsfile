@@ -1,0 +1,95 @@
+pipeline {
+    agent any
+
+    stages {
+        
+        stage("Git Checkout"){
+            steps{
+               git branch: 'dev', credentialsId: 'karthik', url: 'https://github.com/Charykarthik/code'
+            }
+        }
+        stage('Database Dump') {
+            steps {
+                script {
+                    // Install AWS CLI
+                    sh 'apt-get update && apt-get install -y awscli'
+
+                    // Replace with your AWS CLI command to create a database dump
+                    sh 'aws ec2 run-instances --instance-id sql-server --command "mysqldump -u USERNAME -pPASSWORD DATABASE_NAME > /tmp/dump.sql"'
+                }
+            }
+        }
+
+        stage('Create S3 Bucket & Copy Dump File') {
+            steps {
+                script {
+                    // Replace with your desired S3 bucket name
+                    def s3BucketName = 'sceg_dmp_bucket'
+
+                    // Create S3 bucket
+                    sh "aws s3api create-bucket --bucket ${s3BucketName} --region your-aws-region"
+
+                    // Copy dump file to S3 bucket
+                    sh 'aws s3 cp /tmp/dump.sql s3://${s3BucketName}/dump.sql'
+                }
+            }
+        }
+        
+        stage('Create GCS Bucket and BigQuery Dataset') {
+            steps {
+                script {
+
+                    def projectId = 'your-project-id'              // Replace with your GCP project ID
+                    
+                    def gcsBucketName = 'your-gcs-bucket-name'    // Replace with your GCS bucket name
+
+                    def datasetId = 'your-dataset-id'             // Replace with your BigQuery dataset ID
+                                        
+                    sh "gsutil mb gs://${gcsBucketName}"          // Create GCS bucket using gsutil command
+
+                    sh "bq mk --project_id=${projectId} ${projectId}:${datasetId}"  // Create BigQuery dataset using bq command
+                }
+            }
+        }
+        
+        
+        stage('Create BigQuery Table') {
+            steps {
+                script {
+                    // Replace with your BigQuery table schema
+                    def tableSchema = 'field1:STRING, field2:STRING, field3:STRING, field4:STRING, field5:STRING,'
+
+                    // Replace with your BigQuery table name
+                    def tableName = 'your_table_name'
+
+                    // Create BigQuery table using bq command
+                    sh "bq mk --schema='${tableSchema}' ${projectId}:${datasetId}.${tableName}"
+                }
+            }
+        }
+    
+    
+    
+        stage('Transfer File to BigQuery') {
+            steps {
+                script {
+                    // Replace with your GCP project ID
+                    def projectId = 'your-project-id'
+
+                    // Replace with your BigQuery dataset ID
+                    def datasetId = 'your-dataset-id'
+
+                    // Replace with your BigQuery table name
+                    def tableName = 'your_table_name'
+
+                    // Replace with your GCS bucket name and file path
+                    def gcsBucket = 'your-gcs-bucket-name'
+                    def gcsFile = 'path/to/your/*.sql'
+
+                    // Transfer file from GCS to BigQuery table using bq command
+                    sh "bq load --project_id=${projectId} --skip_leading_rows=1 --source_format=CSV ${projectId}:${datasetId}.${tableName} gs://${gcsBucket}/${gcsFile}"
+                }
+            }
+        }
+    }
+}
