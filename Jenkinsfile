@@ -10,8 +10,8 @@ pipeline {
         }
         stage('GCP Auth') {
             steps {
-                withCredentials([file(credentialsId: './bold-guide-405907-cc6391da68fb.json ', variable: 'cc6391da68fb78ec04dc985787da4d97ed871839')]) {
-                        sh "gcloud auth activate-service-account --key-file= ./bold-guide-405907-cc6391da68fb.json"
+                withCredentials([file(credentialsId: '112090211538399136158', variable: 'cc6391da68fb78ec04dc985787da4d97ed871839')]) {
+                        sh "gcloud auth activate-service-account --key-file=cc6391da68fb78ec04dc985787da4d97ed871839"
                 }
             }
         }
