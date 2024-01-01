@@ -8,33 +8,15 @@ pipeline {
                git branch: 'main', credentialsId: 'karthik', url: 'https://github.com/Charykarthik/usecase3'
             }
         }
-        stage('Database Dump') {
+        stage('GCP Auth') {
             steps {
-                script {
-                    // Install AWS CLI
-                    sh 'sudo apt-get update '
-                    sh 'sudo apt-get install -y awscli'
-
-                    // Replace with your AWS CLI command to create a database dump
-                    sh 'aws ec2 run-instances --instance-id sql-server --command "mysqldump -u root -pPassword@123 karthik > /dump.sql"'
+                withCredentials([file(credentialsId: './bold-guide-405907-cc6391da68fb.json ', variable: 'cc6391da68fb78ec04dc985787da4d97ed871839')]) {
+                        sh "gcloud auth activate-service-account --key-file= ./bold-guide-405907-cc6391da68fb.json"
                 }
             }
         }
 
-        stage('Create S3 Bucket & Copy Dump File') {
-            steps {
-                script {
-                    // Replace with your desired S3 bucket name
-                    def s3BucketName = 'sceg_dmp_bucket'
-
-                    // Create S3 bucket
-                    sh "aws s3api create-bucket --bucket ${s3BucketName} --region us-east-1"
-
-                    // Copy dump file to S3 bucket
-                    sh 'aws s3 cp /dump.sql s3://${s3BucketName}/dump.sql'
-                }
-            }
-        }
+        
         
         stage('Create GCS Bucket and BigQuery Dataset') {
             steps {
@@ -70,33 +52,7 @@ pipeline {
         }
 
         
-        stage('Transfer File from S3 to GCS') {
-            steps {
-                script {
-                    // Replace with your AWS access key, secret key, region, and S3 bucket details
-                    def awsAccessKeyId = 'AKIAQEKUEUA6XDKAHP7N'
-                    def awsSecretAccessKey = 'BTag6DecoMb//4y2ZjyIzxXws68sqNmlRntr55rm'
-                    def awsRegion = 'us-east-1'  // Replace with your AWS region
-                    def s3BucketName = 'sceg_dmp_bucket'
-                    def s3ObjectKey = 'path/to/your/file.txt'
-
-                    // Replace with your GCS service account key path
-                    def gcsServiceAccountKeyPath = '/bold-guide-405907-cc6391da68fb.json'
-                    def gcsBucketName = 'sceg_dump_buck'
-
-                    // Configure AWS CLI credentials
-                    //sh "aws configure set aws_access_key_id ${awsAccessKeyId}"
-                    //sh "aws configure set aws_secret_access_key ${awsSecretAccessKey}"
-                    //sh "aws configure set region ${awsRegion}"
-
-                    // Download file from S3
-                    sh "aws s3 cp s3://${s3BucketName}/${s3ObjectKey} /tmp/file.txt"
-
-                    // Upload file to GCS
-                    sh "gsutil cp /tmp/file.txt gs://${gcsBucketName}/path/to/destination/file.txt -i ${gcsServiceAccountKeyPath}"
-                }
-            }
-        }
+       
 
     
     
@@ -123,4 +79,4 @@ pipeline {
         }
     }
 }
-
+v
