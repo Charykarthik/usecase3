@@ -15,7 +15,21 @@ pipeline {
                 }
             }
         }
+        stage('Database Dump') {
+            steps {
+                script {
+                    // Define your SQL Server connection details
+                    def vmInstance = 'sql-server'
+                    def username = 'root'
+                    def password = 'Password@123'
+                    def databaseName = 'mysql'
+                    def dumpFileName = 'dump.sql'
 
+                    // Command to perform SQL dump using sqlcmd utility
+                    sh "sqlcmd -S ${vmInstance} -U ${username} -P ${password} -d ${databaseName} -Q 'BACKUP DATABASE ${databaseName} TO DISK = ''/tmp/${dumpFileName}'''"
+                }
+            }
+        }
         
         
         stage('Create GCS Bucket and BigQuery Dataset') {
