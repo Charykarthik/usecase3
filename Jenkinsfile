@@ -28,7 +28,7 @@ pipeline {
 
                     def datasetId = 'dump'             // Replace with your BigQuery dataset ID
                                         
-                    sh "gsutil mb gs://${gcsBucketName}"          // Create GCS bucket using gsutil command
+                    sh "gcloud storage buckets create gs://${gcsBucketName} --uniform-bucket-level-access"         // Create GCS bucket using gsutil command
 
                     sh "bq mk --project_id=${projectId} ${projectId}:${datasetId}"  // Create BigQuery dataset using bq command
                 }
