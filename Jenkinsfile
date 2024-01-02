@@ -26,7 +26,7 @@ pipeline {
                     def dumpFileName = 'dump.sql'
 
                     // Command to perform SQL dump using sqlcmd utility
-                    sh "sqlcmd -S ${vmInstance} -U ${username} -P ${password} -d ${databaseName} -Q 'BACKUP DATABASE ${databaseName} TO DISK = ''/${dumpFileName}'''"
+                    sh "mysqldump -S ${vmInstance} -U ${username} -P ${password} -d ${databaseName} karthik > dumpfile.sql"
                 }
             }
         }
