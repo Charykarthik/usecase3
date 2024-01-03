@@ -26,7 +26,7 @@ pipeline {
                     def dumpFileName = 'dump.sql'
 
                     // Command to perform SQL dump using sqlcmd utility
-                    sh " gcloud compute ssh sql-server  --zone=us-east1-b --command "mysqldump kathik /dump.sql"  "
+                    sh " gcloud compute ssh sql-server  --zone=us-east1-b --command "mysqldump -u root -p Password@123 kathik > dump.sql "  "
                 }
             }
         }
