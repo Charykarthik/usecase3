@@ -27,7 +27,7 @@ pipeline {
                     def SQL_DUMP_FILE = 'dump.sql'
 
                     // Command to perform SQL dump using sqlcmd utility
-                    sh " gcloud compute ssh ${instanceName} --project=${gcpProject} --zone=${gcpZone} --command='sqlcmd  -U root -P Password@123 -d karthik -Q ''BACKUP DATABASE ${DATABASE_NAME} TO DISK = ''''/${SQL_DUMP_FILE}''''''"
+                    sh " gcloud compute ssh ${instanceName} --project=${gcpProject} --zone=${gcpZone} --command='sqlcmd  -U root -P Password@123 -d karthik -Q ''BACKUP DATABASE ${DATABASE_NAME} TO DISK = ''''/${SQL_DUMP_FILE}'''''''"
                     
 
                 }
