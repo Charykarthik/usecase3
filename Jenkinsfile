@@ -19,14 +19,17 @@ pipeline {
             steps {
                 script {
                     // Define your SQL Server connection details
-                    def vmInstance = 'sql-server'
-                    def username = 'root'
+                    def instanceName = 'sql-server'
+                    def gcpProject = 'bold-guide-405907'
+                    def gcpZone = 'us-east1-b'
                     def password = 'Password@123'
-                    def databaseName = 'karthik'
-                    def dumpFileName = 'dump.sql'
+                    def DATABASE_NAME = 'karthik'
+                    def SQL_DUMP_FILE = 'dump.sql'
 
                     // Command to perform SQL dump using sqlcmd utility
-                    sh " gcloud compute ssh sql-server  --zone=us-east1-b --command "mysqldump -u root -p Password@123 kathik > dump.sql "  "
+                    sh " gcloud compute ssh ${instanceName} --project=${gcpProject} --zone=${gcpZone} --command='sqlcmd  -U root -P Password@123 -d karthik -Q ''BACKUP DATABASE ${DATABASE_NAME} TO DISK = ''''/tmp/${SQL_DUMP_FILE}'''''''"
+                    
+
                 }
             }
         }
